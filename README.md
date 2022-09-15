@@ -87,7 +87,7 @@ Updates a category by changing at least one or all fields
   - _**On success**_ - Return HTTP status 200. Also return the updated product document. The response should be a JSON object like [this](#successful-response-structure)
   - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 
-### DELETE /products/:productId
+### DELETE /deletecategory/:categoryId
 - Deletes a category by category id if it's not already deleted
 - __Response format__
   - _**On success**_ - Return HTTP status 200. The response should be a JSON object like [this](#successful-response-structure)
@@ -108,6 +108,7 @@ Updates a category by changing at least one or all fields
   updatedAt: {timestamp}
 }
 ```
+## Product APIs 
 ### POST /addproduct
 - Create a product document from request body.
 - __Response format__
