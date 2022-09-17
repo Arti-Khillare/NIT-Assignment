@@ -80,14 +80,21 @@ Follow the naming conventions exactly as instructed
     ]
 }
 ```
-### PUT  /updatecategory/:categoryId
+### GET   /category/:categoryId
+Get category of one ID
+- __Response format__
+  - _**On success**_ - Return HTTP status 200. Also return the updated product document. The response should be a JSON object like [this](#successful-response-structure)
+  - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
+
+
+### PUT  /category/:categoryId
 Updates a category by changing at least one or all fields
 - Check if the categoryId exists (must have isDeleted false and is present in collection). If it doesn't, return an HTTP status 404 with a response body like [this](#error-response-structure)
 - __Response format__
   - _**On success**_ - Return HTTP status 200. Also return the updated product document. The response should be a JSON object like [this](#successful-response-structure)
   - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 
-### DELETE /deletecategory/:categoryId
+### DELETE /category/:categoryId
 - Deletes a category by category id if it's not already deleted
 - __Response format__
   - _**On success**_ - Return HTTP status 200. The response should be a JSON object like [this](#successful-response-structure)
@@ -109,7 +116,7 @@ Updates a category by changing at least one or all fields
 }
 ```
 ## Product APIs 
-### POST /addproduct
+### POST /product
 - Create a product document from request body.
 - __Response format__
   - _**On success**_ - Return HTTP status 201. Also return the product document. The response should be a JSON object like [this](#successful-response-structure)
@@ -132,7 +139,7 @@ Updates a category by changing at least one or all fields
     }
 }
 ```
-### GET /getproductlist
+### GET /product
 -category to fetch details of their products.
 - get the product by using queryFilter to filter the query at least one and fetch all details
 - if queryFilter not match with item then throw error
@@ -142,20 +149,20 @@ Updates a category by changing at least one or all fields
 ```yaml
 ```
 
-### GET /getproductbyID/:productId
+### GET /product/:productId
 - Returns product details by product id
 - __Response format__
   - _**On success**_ - Return HTTP status 200. Also return the product documents. The response should be a JSON object like [this](#successful-response-structure)
   - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 
-### PUT /updateproduct/:productId
+### PUT /product/:productId
 - Updates a product by changing at least one or all fields
 - Check if the productId exists (must have isDeleted false and is present in collection). If it doesn't, return an HTTP status 404 with a response body like [this](#error-response-structure)
 - __Response format__
   - _**On success**_ - Return HTTP status 200. Also return the updated product document. The response should be a JSON object like [this](#successful-response-structure)
   - _**On error**_ - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like [this](#error-response-structure)
 
-### DELETE /deleteproduct/:productId
+### DELETE /product/:productId
 - Deletes a product by product id if it's not already deleted
 - __Response format__
   - _**On success**_ - Return HTTP status 200. The response should be a JSON object like [this](#successful-response-structure)
