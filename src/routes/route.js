@@ -1,32 +1,38 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const categoryController = require("../controller/categoryController");
-const productController = require("../controller/productController");
+const categoryController = require('../controller/categoryController')
+const productController = require('../controller/productController')
 
 /**
  * Handling all the  CRUD API's controller function related to the category
  */
 
-router.post("/addcategory", categoryController.createCategory);
+router.post('/category', categoryController.createCategory);
 
-router.get("/getcateory", categoryController.getCategory);
+router.get('/category', categoryController.getCategory);
 
-router.put("/updatecategory/:categoryId", categoryController.updateCategory);
+router.get('/category/:categoryId', categoryController.getOneCategory);
 
-router.delete("/deletecategory/:categoryId", categoryController.deleteCategory);
+router.put('/category/:categoryId', categoryController.updateCategory);
+
+router.delete('/category/:categoryId', categoryController.deleteCategory);
 
 /**
  * Handling all the  CRUD API's controller function related to the product
  */
 
-router.post("/addproduct", productController.createProduct);
+router.post('/product', productController.createProduct);
 
-router.get("/getproductlist", productController.getProduct);
+router.get('/product', productController.getProduct);
 
-router.get("/getproductbyID/:productId", productController.getProductByID);
+router.get('/product/:productId', productController.getProductByID)
 
-router.put("/updateproduct/:productId", productController.updateProduct);
+router.put('/product/:productId', productController.updateProduct);
 
-router.delete("/deleteproduct/:productId", productController.deleteProduct);
+router.delete('/product/:productId', productController.deleteProduct);
 
-module.exports = router;
+/**
+ * exporting router functions to use it into other file
+ */
+
+module.exports = router

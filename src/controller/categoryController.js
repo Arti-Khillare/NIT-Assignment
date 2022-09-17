@@ -1,16 +1,18 @@
 const categoryModel = require("../models/categoryModel");
 const validator = require("../utils/validator");
 
+/**
+ * API function for adding category using input details in req.body
+ */
+
 const createCategory = async (req, res) => {
   try {
     let requestBody = req.body;
     if (Object.keys(requestBody).length === 0) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `Invalid input. Please enter all details!`,
-        });
+      return res.status(400).send({
+        status: false,
+        message: `Invalid input. Please enter all details!`,
+      });
     }
     const { categoryName, subCategory, description } = requestBody;
 
@@ -20,12 +22,10 @@ const createCategory = async (req, res) => {
         .send({ status: false, message: `category is required!` });
     }
     if (!validator.isValidString(categoryName)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `categoryName must be filled with string!`,
-        });
+      return res.status(400).send({
+        status: false,
+        message: `categoryName must be filled with string!`,
+      });
     }
 
     if (!requestBody.subCategory) {
@@ -34,12 +34,10 @@ const createCategory = async (req, res) => {
         .send({ status: false, message: `subCategory is required!` });
     }
     if (!validator.isValidString(subCategory)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `subCategory must be filled with string!`,
-        });
+      return res.status(400).send({
+        status: false,
+        message: `subCategory must be filled with string!`,
+      });
     }
 
     if (!requestBody.description) {
@@ -48,47 +46,51 @@ const createCategory = async (req, res) => {
         .send({ status: false, message: `description is required!` });
     }
     if (!validator.isValidString(description)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `description must be filled with string!`,
-        });
+      return res.status(400).send({
+        status: false,
+        message: `description must be filled with string!`,
+      });
     }
 
     const category = await categoryModel.create(requestBody);
-    return res
-      .status(201)
-      .send({
-        status: true,
-        message: `Category added successfully!`,
-        data: category,
-      });
+    return res.status(201).send({
+      status: true,
+      message: `Category added successfully!`,
+      data: category,
+    });
   } catch (error) {
     return res
       .status(500)
       .send({ status: false, message: "Error", error: error.message });
   }
 };
+
+/**
+ * API function to get category by using  pageSize,pageNumber in query
+ */
+
 const getCategory = async (req, res) => {
   try {
     try {
+      const { pageSize, pageNumber } = req.query;
       const categoryDetail = await categoryModel
-        .find()
+        .find({ isDeleted: false })
         .select({
           categoryName: 1,
           subCategory: 1,
           description: 1,
           created: 1,
           updated: 1,
-        });
-      res
-        .status(200)
-        .send({
-          status: true,
-          message: `category details`,
-          data: categoryDetail,
-        });
+        })
+        .sort({ _id: -1 })
+        .limit(pageSize)
+        .skip(pageSize * (pageNumber - 1));
+      res.status(200).send({
+        status: true,
+        message: `category details`,
+        data: categoryDetail,
+        totalCount: await categoryModel.find({ isDeleted: false }).count(),
+      });
     } catch (err) {
       res
         .status(500)
@@ -100,6 +102,10 @@ const getCategory = async (req, res) => {
       .send({ status: false, message: "Error", error: error.message });
   }
 };
+
+/**
+ * API function for updating category using categoryId in params 
+ */
 
 const updateCategory = async (req, res) => {
   try {
@@ -113,12 +119,10 @@ const updateCategory = async (req, res) => {
     let finalFilter = {};
 
     if (!validator.isValidRequestBody(requestBody)) {
-      return res
-        .status(400)
-        .send({
-          status: false,
-          message: `Atleast one input is required to update`,
-        });
+      return res.status(400).send({
+        status: false,
+        message: `Atleast one input is required to update`,
+      });
     }
 
     const categoryData = await categoryModel.findById(_id);
@@ -170,20 +174,22 @@ const updateCategory = async (req, res) => {
 
     const countOfCategories = countData.length;
     const totalCount = countOfCategories;
-    return res
-      .status(200)
-      .send({
-        status: true,
-        message: `category updated successfully `,
-        data: updatedCategoryDetails,
-        totalCount,
-      });
+    return res.status(200).send({
+      status: true,
+      message: `category updated successfully `,
+      data: updatedCategoryDetails,
+      totalCount,
+    });
   } catch (error) {
     return res
       .status(500)
       .send({ status: false, message: "Error", error: error.message });
   }
 };
+
+/**
+ * API function for deleting category using productId in params 
+ */
 
 const deleteCategory = async (req, res) => {
   try {
@@ -211,13 +217,11 @@ const deleteCategory = async (req, res) => {
       { isDeleted: true },
       { new: true }
     );
-    res
-      .status(200)
-      .send({
-        status: true,
-        message: `deleted successfully`,
-        data: categoryData,
-      });
+    res.status(200).send({
+      status: true,
+      message: `deleted successfully`,
+      data: categoryData,
+    });
   } catch (error) {
     return res
       .status(500)
@@ -225,9 +229,32 @@ const deleteCategory = async (req, res) => {
   }
 };
 
+/**
+ * API function for get one category details using categoryId in params 
+ */
+
+const getOneCategory = async (req, res) => {
+  try {
+    let { categoryId: _id } = req.params;
+    if (!validator.isValidObjectId(_id)) {
+      return res.status(400).send({ status: false, msg: `Invalid ID!` });
+    }
+
+    const checkID = await categoryModel.findById(_id);
+    return res
+      .status(200)
+      .send({ status: false, msg: `Fetched Single Record!`, data: checkID });
+  } catch (error) {}
+};
+
+/**
+ * exporting all the API functions to used it into other files
+ */
+
 module.exports = {
   createCategory,
   getCategory,
   updateCategory,
   deleteCategory,
+  getOneCategory,
 };

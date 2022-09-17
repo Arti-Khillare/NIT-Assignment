@@ -1,6 +1,11 @@
 const productModel = require("../models/productModel");
 const categoryModel = require("../models/categoryModel");
 const validator = require("../utils/validator");
+
+/**
+ * API function for adding product by providing input details in req.body
+ */
+
 const createProduct = async (req, res) => {
   try {
     const requestBody = req.body;
@@ -101,13 +106,17 @@ const createProduct = async (req, res) => {
   }
 };
 
+/**
+ * API function for getting product details by providing input in query
+ */
+
 const getProduct = async (req, res) => {
   try {
-    let queryFilter = req.query;
-    queryFilter.isDeleted = false;
-
+    const { pageSize, pageNumber } = req.query;
     const products = await productModel
-      .find(queryFilter)
+      .find({ isDeleted: false })
+      .populate("categoryId")
+      .sort({ _id: -1 })
       .select({
         _id: 1,
         productName: 1,
@@ -115,7 +124,10 @@ const getProduct = async (req, res) => {
         productNumber: 1,
         category: 1,
         categoryId: 1,
-      });
+      })
+      .limit(pageSize)
+      .skip(pageSize * (pageNumber - 1));
+
     if (!(products.length > 0)) {
       return res
         .status(404)
@@ -128,6 +140,8 @@ const getProduct = async (req, res) => {
         status: true,
         message: `products details get successfully`,
         data: products,
+        totalCount:   await productModel.find({ isDeleted: false }).count(),
+        pageSize:pageSize
       });
   } catch (error) {
     return res
@@ -135,6 +149,10 @@ const getProduct = async (req, res) => {
       .send({ status: false, message: "Error", error: error.message });
   }
 };
+
+/*
+ * API function to get product details by productId as input in params
+ */
 
 const getProductByID = async (req, res) => {
   try {
@@ -151,11 +169,10 @@ const getProductByID = async (req, res) => {
         .send({ status: false, message: `${_id} is not present in DB!` });
     }
 
-    const productDetail = await productModel.findById({
-      _id: _id,
-      isDeleted: false,
-    });
-    res
+    const productDetail = await productModel
+      .findById({ _id: _id, isDeleted: false })
+      .populate("categoryId");
+      res
       .status(200)
       .send({ status: true, message: `Product  details`, data: productDetail });
   } catch (error) {
@@ -164,6 +181,12 @@ const getProductByID = async (req, res) => {
       .send({ status: false, message: "Error", error: error.message });
   }
 };
+
+/**
+ * API function for update product details by providing productId in params
+ * also by providing any input details in req.body
+ */
+
 const updateProduct = async (req, res) => {
   try {
     let { productId: _id } = req.params;
@@ -260,6 +283,10 @@ const updateProduct = async (req, res) => {
   }
 };
 
+/**
+ * API function for deleting product using productId in params 
+ */
+
 const deleteProduct = async (req, res) => {
   try {
     let { productId: _id } = req.params;
@@ -298,6 +325,11 @@ const deleteProduct = async (req, res) => {
       .send({ status: false, message: "Error", error: error.message });
   }
 };
+
+/**
+ * exporting all the API functions to used it into other files
+ */
+
 module.exports = {
   createProduct,
   updateProduct,
